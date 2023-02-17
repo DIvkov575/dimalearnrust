@@ -1,35 +1,39 @@
-// awful wc
-
-use std::fs;
-use std::path::Path;
-// use std::io::{self, BufRead, Write};
 use regex::Regex;
-use std::env;
+use clap::{Arg, App};
+use lazy_static::lazy_static;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let matches = App::new("My Test Program")
+        .about("WC in rust v2")
+        .arg(Arg::with_name("file_path")
+                 .short('f')
+                 .long("files")
+                 .takes_value(true)
+                 .help(""))
+        .get_matches();
 
-    if Path::new(&args[1]).exists() {
-        let content = fs::read_to_string(&args[1]).unwrap();
-        let c = content.matches(" ").count();
-        println!("{}", c);
+       let file_path = matches.value_of("file_path").unwrap_or("input.txt");
+       let file_content = std::fs::read_to_string(&file_path).unwrap();
 
-    } else {
-        let c = &args[1].matches(" ").count();
-        println!("{}", c);
-    }
-    // println!("{}", rs);
+       lazy_static! {
+           static ref RE: Regex = Regex::new(r" \S").unwrap();
+       }
+       let ctr = RE.captures_iter(&file_content).count();
+       println!("{}", ctr);    
 
+
+    // println!("{}", matches.value_of("a").unwrap_or("asdf"));
+
+
+    // let num_str = matches.value_of("num");
+    // match num_str {
+    //     None => println!("No idea what your favorite number is."),
+    //     Some(s) => {
+    //         match s.parse::<i32>() {
+    //             Ok(n) => println!("Your favorite number must be {}.", n + 5),
+    //             Err(_) => println!("That's not a number! {}", s),
+    //         }
+    //     }
+    // }
 }
-
-        // attempt at using crate but I can no figure it out
-        // let reg: Regex = Regex::new(" ");
-        // let restul= reg.find_iter(&content).count();
-        // println!("{}", restul);
-
-// get inputs
-// iterate through inputs
-// for each check if exist -> get content
-// else -> get contetn
-// content -> split by space or new line -> count words
 
