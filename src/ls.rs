@@ -7,7 +7,7 @@ fn main() {
         .about("ls")
         .arg(Arg::with_name("directory")
                  .short('d')
-                 .long("dir")
+                 .long("dir
                  .takes_value(true)
                  .help("asdf"))
         .get_matches();
@@ -17,4 +17,3 @@ fn main() {
     }
 
 }
-
