@@ -10,7 +10,7 @@ fn main() {
                  .long("dir
                  .takes_value(true)
                  .help("asdf"))
-        .get_matches();
+            .get_matches();
     let path = matches.value_of("directory").unwrap_or_default();
     for file in std::fs::read_dir(&path).unwrap() {
         println!("{}", file.unwrap().path().display());
