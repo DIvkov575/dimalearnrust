@@ -39,7 +39,8 @@ fn main() {
 #[allow(non_snake_case)]
 fn dij(start: i32, V: &mut [i32; 6], W: HashMap<i32, Vec<E>>, Q: &mut Vec<E>) {
     // finds minimum weight edge -> sets Value & index
-    Q.extend(W.get(&start).unwrap().clone());
+    let vec = W.get(&start).unwrap().clone();
+    Q.extend(vec);
 
     // ends program if queue empty (all nodes visited)
     if Q.len() == 0 {

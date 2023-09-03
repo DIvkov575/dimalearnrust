@@ -7,8 +7,7 @@ use lib::{END, E};
 // fn main() -> Result<(), Box<dyn Error>> {
 fn main() {
     // iterative_dfs();
-    let path = iterative_dfs_ret_path().unwrap();
-    print!("{:?}", path);
+    print!("{:?}", iterative_dfs_ret_path().unwrap());
     // recursive_dfs_wrapper();
     // Ok(())
 }
@@ -57,7 +56,6 @@ fn iterative_dfs() {
         println!("stack: {:?}", stack);
     }
 }
-
 
 fn iterative_dfs_ret_path() -> Result<Vec<u32>, Box<dyn Error>> {
     let start = 1;
