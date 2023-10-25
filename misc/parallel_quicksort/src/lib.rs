@@ -6,6 +6,35 @@ use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hasher};
 use rand::Rng;
 
+
+#[macro_export]
+macro_rules! harr {
+    ($n: expr) => {{
+        lib::hashed_gen($n, 0)
+    }};
+    ($n: expr, $offset: expr) => {{
+        lib::hashed_gen($n, $offset)
+    }};
+}
+
+#[macro_export]
+macro_rules! get_arr {
+    ($n: expr) => {{
+        lib::hashed_gen($n, 0)
+    }};
+    ($n: expr, $gen: expr) => {{
+        if $gen == "malloc" {
+            lib::malloc_gen($n)
+        } else if $gen == "random" {
+            lib::random_gen($n)
+        } else {
+            lib::hashed_gen($n, 0)
+        }
+    }};
+    ($n: expr, "hashed", $offset: expr) => {{
+        lib::hashed_gen($n, $offset)
+    }}
+}
 pub fn malloc_gen(n: usize) -> Vec<usize> {
     unsafe {
         let layout = Layout::array::<usize>(n).unwrap();
@@ -38,31 +67,7 @@ pub fn hashed_gen(n: usize, offset: usize) -> Vec<usize> {
     output
 }
 
-#[macro_export]
-macro_rules! get_arr {
-    ($n: expr) => {{
-        lib::hashed_gen($n, 0)
-    }};
-    ($n: expr, $gen: expr) => {{
-        if $gen == "malloc" {
-            lib::malloc_gen($n)
-        } else if $gen == "random" {
-            lib::random_gen($n)
-        } else {
-            lib::hashed_gen($n, 0)
-        }
-    }};
-    ($n: expr, "hashed", $offset: expr) => {{
-        lib::hashed_gen($n, $offset)
-    }}
-}
 
-#[macro_export]
-macro_rules! harr {
-    ($n: expr) => {{
-        lib::hashed_gen($n, 0)
-    }};
-    ($n: expr, $offset: expr) => {{
-        lib::hashed_gen($n, $offset)
-    }};
+pub fn print_type_of<T>(_: &T) {
+    println!("{}", std::any::type_name::<T>())
 }
