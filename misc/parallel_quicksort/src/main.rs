@@ -8,34 +8,27 @@ use std::thread::{spawn, JoinHandle};
 use lazy_static::lazy_static;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
-// use rayon::rayon_core::thread_pool::ThreadPool;
-
-// lazy_static! {
-    // static ref ARRAY: Mutex<Vec<u8>> = Mutex::new(vec![]);
-    // static ref POOL: Mutex<rayon_core::thread_pool::ThreadPool> = Mutex::new(rayon::ThreadPoolBuilder::new().num_threads(1).build().unwrap());
-// }
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let pool = rayon::ThreadPoolBuilder::new().num_threads(4).build().unwrap();
-    // print_type_of(&pool);
+    let args: Vec<String> = std::env::args().collect();
+    let pool = rayon::ThreadPoolBuilder::new().num_threads(args[1].parse::<usize>()?).build().unwrap();
 
-    let input: Vec<usize> = harr!((10usize).pow(6), 42);
+    let input: Vec<usize> = harr!((10usize).pow(8), 42);
     // println!("Input: {:?}", input);
 
-    let mut timer = Instant::now();
-    let output1 = q_sort(input.clone());
-    let t1 = timer.elapsed();
-    println!("Output1: {:.3?}", t1);
+    // let mut timer = Instant::now();
+    // let output1 = q_sort(input.clone());
+    // let t1 = timer.elapsed();
+    // println!("Output1: {:.3?}", t1);
 
 
-    timer = Instant::now();
-    // let output1 = POOL.lock().install(|| q_sort_parallel(input));
+    let timer = Instant::now();
     let output1 = pool.install(|| q_sort_parallel(input, &pool));
     let t2 = timer.elapsed();
     println!("Output2: {:.3?}", t2);
 
-    println!("diff: {:.3?}%", 100.0 - (t1.as_millis() as f64)/(t2.as_millis() as f64)*100.0);
+    // println!("diff: {:.3?}%", 100.0 - (t1.as_millis() as f64)/(t2.as_millis() as f64)*100.0);
     Ok(())
 }
 
@@ -45,9 +38,6 @@ fn q_sort_parallel(input: Vec<usize>, pool: &rayon::ThreadPool) -> Vec<usize> {
     let mut L: Vec<usize> = Vec::with_capacity(input.len() /2);
     let mut M: Vec<usize> = Vec::with_capacity(1);
     let mut R: Vec<usize> = Vec::with_capacity(input.len() /2);
-    // let mut L: Vec<usize> = Vec::new();
-    // let mut M: Vec<usize> = Vec::new();
-    // let mut R: Vec<usize> = Vec::new();
 
     for i in 0..input.len() {
         if input[i]  < input[input.len() -1] {
