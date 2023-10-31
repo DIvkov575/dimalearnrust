@@ -1,18 +1,16 @@
-use std::collections::HashMap;
-use anyhow::Error;
+use spinoff::{Color, Spinner, spinners};
 
 fn main() {
     trait a {
         fn a(&self) {}
     }
 
-    impl a for anyhow::Error {
+    impl a for Spinner{
         fn a(&self) {
             print!("AAAAAAAAAAAAAAAAa");
         }
     }
 
-    let inner = String::from("asdg").into();
-    let b = anyhow::Error{inner};
+    let b= Spinner::new(spinners::Dots, "Initializing Terraform...", Color::Blue);
     b.a();
 }
