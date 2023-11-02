@@ -50,7 +50,7 @@ pub fn malloc_gen(n: usize) -> Vec<usize> {
 
 pub fn random_gen(n: usize) -> Vec<usize> {
     let mut rng = rand::thread_rng();
-    let output: Vec<usize> = vec![0; n].iter().map(|_| rng.gen::<usize>() % 1000).collect();
+    let output: Vec<usize> = vec![0; n].iter().map(|_| rng.gen::<usize>() % 100000).collect();
     output
 }
 
@@ -61,7 +61,7 @@ pub fn hashed_gen(n: usize, offset: usize) -> Vec<usize> {
         .enumerate()
         .map(|(x,_)| {
             s.write_usize(x + offset);
-            (s.finish() % 1000) as usize
+            (s.finish() % 100000) as usize
         })
         .collect();
     output
