@@ -1,16 +1,13 @@
 #![allow(non_snake_case)]
 
-#[allow(special_module_name)]
-mod lib;
-
-
-
 use std::error::Error;
+use std::time::Instant;
 
-
-use std::time::{Instant};
 use itertools::Itertools;
 use rayon::prelude::*;
+
+#[allow(special_module_name)]
+mod lib;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -72,7 +69,7 @@ fn parallel_partition(pivot: usize, input: &Vec<usize>) -> (Vec<usize>, Vec<usiz
     let split_size = input.len()/split_num;
 
     let chunks: Vec<Vec<usize>> = input.chunks(split_size).map(|x| x.to_vec()).collect();
-    chunks.par_iter().map( |chunk| {
+    let _ = chunks.par_iter().map( |chunk| {
         let mut L: Vec<usize> = Vec::new();
         let mut M: Vec<usize> = Vec::new();
         let mut R: Vec<usize> = Vec::new();

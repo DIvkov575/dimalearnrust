@@ -1,11 +1,10 @@
 #![allow(dead_code)]
 
 use std::alloc::{alloc, handle_alloc_error, Layout};
-// use std::alloc::{dealloc};
 use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hasher};
-use rand::Rng;
+use std::hash::Hasher;
 
+use rand::Rng;
 
 #[macro_export]
 macro_rules! harr {
