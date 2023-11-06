@@ -3,12 +3,12 @@
 #[allow(special_module_name)]
 mod lib;
 
-use lib::print_type_of;
-use std::thread;
+
+
 use std::error::Error;
-use std::thread::{spawn, JoinHandle};
-use std::sync::Arc;
-use std::time::{Duration, Instant};
+
+
+use std::time::{Instant};
 use itertools::Itertools;
 use rayon::prelude::*;
 
@@ -23,15 +23,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     // comparison of various sorting algos
     // entirely serial
     timer = Instant::now();
-    let output1 = q_sort(input_a);
+    let _output1 = q_sort(input_a);
     let t1 = timer.elapsed();
     // serial partition
     timer = Instant::now();
-    let output1 = pool.install(|| q_sort_parallel1(input_b));
+    let _output1 = pool.install(|| q_sort_parallel1(input_b));
     let t2 = timer.elapsed();
     // sequential partition
     timer = Instant::now();
-    let output2 = pool.install(|| q_sort_parallel2(input_c));
+    let _output2 = pool.install(|| q_sort_parallel2(input_c));
     let t3 = timer.elapsed();
 
 
@@ -65,9 +65,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn parallel_partition(pivot: usize, input: &Vec<usize>) -> (Vec<usize>, Vec<usize>, Vec<usize>){
-    let mut L: Vec<usize> = Vec::new();
-    let mut M: Vec<usize> = Vec::new();
-    let mut R: Vec<usize> = Vec::new();
+    let L: Vec<usize> = Vec::new();
+    let M: Vec<usize> = Vec::new();
+    let R: Vec<usize> = Vec::new();
     let split_num = 4;
     let split_size = input.len()/split_num;
 
