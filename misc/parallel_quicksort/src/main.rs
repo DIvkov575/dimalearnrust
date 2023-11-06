@@ -3,7 +3,6 @@
 use std::error::Error;
 use std::time::Instant;
 
-use itertools::Itertools;
 use rayon::prelude::*;
 
 #[allow(special_module_name)]
@@ -91,11 +90,7 @@ fn parallel_partition(pivot: usize, input: &Vec<usize>) -> (Vec<usize>, Vec<usiz
 fn q_sort_parallel2(input: Vec<usize>) -> Vec<usize> {
     let pivot = input[input.len()/2];
     let mut output: Vec<usize> = Vec::with_capacity(input.len());
-    let mut L: Vec<usize> = Vec::with_capacity(input.len() / 2);
-    let mut M: Vec<usize> = Vec::with_capacity(1);
-    let mut R: Vec<usize> = Vec::with_capacity(input.len() / 2);
-
-    (L, M, R) = parallel_partition(pivot, &input);
+    let (mut L, mut M, mut R) = parallel_partition(pivot, &input);
 
     if L.len() > 1 && R.len() > 1 {
         let (mut l_handle, mut r_handle) = rayon::join(
