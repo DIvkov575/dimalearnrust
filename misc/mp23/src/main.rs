@@ -21,96 +21,28 @@ fn create_dist(n: usize) -> Vec<Vec<f64>> {
 }
 
 fn sums(raw_numbers: Vec<f64>) -> Vec<(f64, Vec<(usize, f64)>, Vec<(usize, f64)>)> {
-    let mut output: Vec<(f64, Vec<(usize, f64)>, Vec<(usize, f64)>)> = Vec::from([
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-        (0f64, Vec::new(), Vec::new()),
-    ]);
     let target = 0.5;
-    let mut numbers1: Vec<(usize, f64)> = raw_numbers
+    let mut output: Vec<(f64, Vec<(usize, f64)>, Vec<(usize, f64)>)> = vec![(0f64, Vec::new(), Vec::new()); 10];
+    let mut numbers: Vec<(usize, f64)> = raw_numbers
         .iter()
         .enumerate()
-        // .filter(|(x, y)| y <= &&target)
+        .filter(|(x, y)| y <= &&target)
         .filter(|(x, y)| y != &&0f64)
         .sorted_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
         .map(|(x, y)| (x, *y))
         .collect();
-    // let mut numbers2: Vec<(usize, f64)> = raw_numbers
-    //     .iter()
-    //     .enumerate()
-    //     .filter(|(x, y)| y > &&target)
-    //     .filter(|(x, y)| y != &&1f64)
-    //     .sorted_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
-    //     .map(|(x, y)| (x, *y))
-    //     .collect();
 
-    println!("numbers1{:?}", numbers1);
-    // println!("numbers2{:?}", numbers2);
-
-    // for i in (0..10usize).rev() {
-    //     if numbers2.len() <= 1 { break; }
-    //     let mut buf: Vec<(usize, f64)> = Vec::from([numbers2[numbers2.len() - 1]]);
-    //     let mut prod = numbers2[numbers2.len() - 1].1;
-    //
-    //     for k in 0..(numbers2.len() - 1) {
-    //         prod *= numbers2[k].1;
-    //         buf.push(numbers2[k]);
-    //         if (output[i].0 + prod) <= 0.5 {
-    //             output[i].0 += prod;
-    //             output[i].2.append(&mut buf.clone());
-    //             // println!("buf: {:?}", buf);
-    //             for elem in buf {
-    //                 let index = numbers2.iter().position(|x| x == &elem).unwrap();
-    //                 // println!("index: {index}, elem: {:?}", elem);
-    //                 numbers2.remove(index);
-    //             }
-    //             break;
-    //         }
-    //     }
-    // }
-
-    for _ in 0..numbers1.len() {
+    for _ in 0..numbers.len() {
         for i in 0..10usize {
-            if numbers1.len() <= 0 { break }
-            if (numbers1[numbers1.len() - 1].1 + output[i].0) <= target { // P(current digit) + P(selected)
-                output[i].1.push(numbers1[numbers1.len() - 1]); // push to output
-                output[i].0 += numbers1[numbers1.len() - 1].1; // increment digit P(total)
-                numbers1.remove(numbers1.len() - 1); // remove from options
+            if numbers.len() <= 0 { break }
+            if (numbers[numbers.len() - 1].1 + output[i].0) <= target { // P(current digit) + P(selected)
+                output[i].1.push(numbers[numbers.len() - 1]); // push to output
+                output[i].0 += numbers[numbers.len() - 1].1; // increment digit P(total)
+                numbers.remove(numbers.len() - 1); // remove from options
             }
         }
     }
 
-    // if numbers1.len() > 1 {
-    //     for i in (0..10usize).rev() {
-    //         if numbers1.len() <= 1 { break; }
-    //         let mut buf: Vec<(usize, f64)> = Vec::from([numbers1[numbers1.len() - 1]]);
-    //         let mut prod = numbers1[numbers1.len() - 1].1;
-    //
-    //         for k in 0..(numbers1.len() - 1) {
-    //             prod *= numbers1[k].1;
-    //             buf.push(numbers1[k]);
-    //             if (output[i].0 + prod) <= 0.5 {
-    //                 output[i].0 += prod;
-    //                 output[i].2.append(&mut buf.clone());
-    //                 for elem in buf {
-    //                     let index = numbers1.iter().position(|x| x == &elem).unwrap();
-    //                     numbers1.remove(index);
-    //                 }
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
-
-    println!("numbers1 remaining: {:?}", numbers1);
-    // println!("numbers2 remaining: {:?}", numbers2);
 
     output
 }
