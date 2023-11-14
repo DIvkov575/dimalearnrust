@@ -37,44 +37,44 @@ fn sums(raw_numbers: Vec<f64>) -> Vec<(f64, Vec<(usize, f64)>, Vec<(usize, f64)>
     let mut numbers1: Vec<(usize, f64)> = raw_numbers
         .iter()
         .enumerate()
-        .filter(|(x, y)| y <= &&target)
+        // .filter(|(x, y)| y <= &&target)
         .filter(|(x, y)| y != &&0f64)
         .sorted_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
         .map(|(x, y)| (x, *y))
         .collect();
-    let mut numbers2: Vec<(usize, f64)> = raw_numbers
-        .iter()
-        .enumerate()
-        .filter(|(x, y)| y > &&target)
-        .filter(|(x, y)| y != &&1f64)
-        .sorted_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
-        .map(|(x, y)| (x, *y))
-        .collect();
+    // let mut numbers2: Vec<(usize, f64)> = raw_numbers
+    //     .iter()
+    //     .enumerate()
+    //     .filter(|(x, y)| y > &&target)
+    //     .filter(|(x, y)| y != &&1f64)
+    //     .sorted_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+    //     .map(|(x, y)| (x, *y))
+    //     .collect();
 
     println!("numbers1{:?}", numbers1);
-    println!("numbers2{:?}", numbers2);
+    // println!("numbers2{:?}", numbers2);
 
-    for i in (0..10usize).rev() {
-        if numbers2.len() <= 1 { break; }
-        let mut buf: Vec<(usize, f64)> = Vec::from([numbers2[numbers2.len() - 1]]);
-        let mut prod = numbers2[numbers2.len() - 1].1;
-
-        for k in 0..(numbers2.len() - 1) {
-            prod *= numbers2[k].1;
-            buf.push(numbers2[k]);
-            if (output[i].0 + prod) <= 0.5 {
-                output[i].0 += prod;
-                output[i].2.append(&mut buf.clone());
-                // println!("buf: {:?}", buf);
-                for elem in buf {
-                    let index = numbers2.iter().position(|x| x == &elem).unwrap();
-                    // println!("index: {index}, elem: {:?}", elem);
-                    numbers2.remove(index);
-                }
-                break;
-            }
-        }
-    }
+    // for i in (0..10usize).rev() {
+    //     if numbers2.len() <= 1 { break; }
+    //     let mut buf: Vec<(usize, f64)> = Vec::from([numbers2[numbers2.len() - 1]]);
+    //     let mut prod = numbers2[numbers2.len() - 1].1;
+    //
+    //     for k in 0..(numbers2.len() - 1) {
+    //         prod *= numbers2[k].1;
+    //         buf.push(numbers2[k]);
+    //         if (output[i].0 + prod) <= 0.5 {
+    //             output[i].0 += prod;
+    //             output[i].2.append(&mut buf.clone());
+    //             // println!("buf: {:?}", buf);
+    //             for elem in buf {
+    //                 let index = numbers2.iter().position(|x| x == &elem).unwrap();
+    //                 // println!("index: {index}, elem: {:?}", elem);
+    //                 numbers2.remove(index);
+    //             }
+    //             break;
+    //         }
+    //     }
+    // }
 
     for _ in 0..numbers1.len() {
         for i in 0..10usize {
@@ -87,32 +87,30 @@ fn sums(raw_numbers: Vec<f64>) -> Vec<(f64, Vec<(usize, f64)>, Vec<(usize, f64)>
         }
     }
 
-    if numbers1.len() > 1 {
-        for i in (0..10usize).rev() {
-            if numbers1.len() <= 1 { break; }
-            let mut buf: Vec<(usize, f64)> = Vec::from([numbers1[numbers1.len() - 1]]);
-            let mut prod = numbers1[numbers1.len() - 1].1;
-
-            for k in 0..(numbers1.len() - 1) {
-                prod *= numbers1[k].1;
-                buf.push(numbers1[k]);
-                if (output[i].0 + prod) <= 0.5 {
-                    output[i].0 += prod;
-                    output[i].2.append(&mut buf.clone());
-                    // println!("buf: {:?}", buf);
-                    for elem in buf {
-                        let index = numbers1.iter().position(|x| x == &elem).unwrap();
-                        // println!("index: {index}, elem: {:?}", elem);
-                        numbers1.remove(index);
-                    }
-                    break;
-                }
-            }
-        }
-    }
+    // if numbers1.len() > 1 {
+    //     for i in (0..10usize).rev() {
+    //         if numbers1.len() <= 1 { break; }
+    //         let mut buf: Vec<(usize, f64)> = Vec::from([numbers1[numbers1.len() - 1]]);
+    //         let mut prod = numbers1[numbers1.len() - 1].1;
+    //
+    //         for k in 0..(numbers1.len() - 1) {
+    //             prod *= numbers1[k].1;
+    //             buf.push(numbers1[k]);
+    //             if (output[i].0 + prod) <= 0.5 {
+    //                 output[i].0 += prod;
+    //                 output[i].2.append(&mut buf.clone());
+    //                 for elem in buf {
+    //                     let index = numbers1.iter().position(|x| x == &elem).unwrap();
+    //                     numbers1.remove(index);
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
 
     println!("numbers1 remaining: {:?}", numbers1);
-    println!("numbers2 remaining: {:?}", numbers2);
+    // println!("numbers2 remaining: {:?}", numbers2);
 
     output
 }
@@ -125,7 +123,7 @@ fn main() {
     let mut score = 0f64;
     let output = sums(numbers);
     for line in &output {
-        score += (0.5 - line.0);
+        score += 0.5 - line.0;
         println!("output-line: {:?}", line);
     }
     println!("score {:.1}", score);
