@@ -10,12 +10,30 @@ fn main() {
     // let a = nested1!(5 -> (1,2,3,); 3 -> (4,5,););
 
     // curry!((5: usize) => (6: usize => (_)), {});
+    let (a,b,c,d,e) = (1,2,3,4,5);
+    let c = nested2!(a=>(b=>(c=>(d=>e))));
+    println!("{}", c);
 
 
-    println!("{:?}", c(b))
 
 
 }
+
+
+
+
+#[macro_export]
+macro_rules! nested2 {
+    ($a:ident=>($b:tt)) => {
+        $a + nested2!($b)
+
+    };
+    ($a:ident) => {
+        $a
+    }
+}
+
+
 
 #[macro_export]
 macro_rules! get_number_type {
