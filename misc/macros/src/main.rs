@@ -7,18 +7,28 @@ fn main() {
     // println!("{}", maths!(5, plus, (3 + 6)));
     // let a = vec1![1, 2, 3, 4,];
     // let a = hashmap1!(5 => 3; 6=>2;);
-    let a = nested1!(5 -> (1,2,3,); 3 -> (4,5,););
+    // let a = nested1!(5 -> (1,2,3,); 3 -> (4,5,););
+
+    // curry!((5: usize) => (6: usize => (_)), {});
 
 
-    println!("{:?}", a)
+    println!("{:?}", c(b))
 
 
 }
 
-// #[macro_export]
-// macro_rules! test1 {
-//     ($a:expr) => {$a};
-// }
+#[macro_export]
+macro_rules! get_number_type {
+    (-$a: literal) => {
+        println!("neg literal")
+    };
+    ($a: literal) => {
+        println!("pos literal")
+    };
+    ($a: expr) => {
+        println!("expr")
+    };
+}
 
 #[macro_export]
 macro_rules! nested1 {
