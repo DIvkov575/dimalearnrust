@@ -3,7 +3,7 @@ use std::cmp::max;
 
 fn main() {
     static mut arr: [[Option<usize>; 11]; 11] = [[None; 11]; 11];
-    static w: [usize; 4] = [5, 3, 10, 9];
+    static w: [usiz5e; 4] = [5, 3, 10, 9];
     static mut v: [usize; 4] = [1, 4, 3, 10];
 
     let capacity = 10;
