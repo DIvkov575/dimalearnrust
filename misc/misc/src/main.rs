@@ -1,45 +1,59 @@
+use std::cell::RefCell;
 use std::cmp::max;
 
-
 fn main() {
-    static mut arr: [[Option<usize>; 11]; 11] = [[None; 11]; 11];
-    static w: [usiz5e; 4] = [5, 3, 10, 9];
-    static mut v: [usize; 4] = [1, 4, 3, 10];
+    let value: Vec<Vec<isize>> = vec![vec![-1; 14]; 14];
+    let w = vec![5, 2, 3, 9, 3];
+    let v = vec![5, 6, 3, 4, 2];
+    let mut arr: Arrs = Arrs {value, w, v};
 
-    let capacity = 10;
-    let a= ks(w.len()-1, capacity);
-    println!("optimal value: {}", a);
+    ks(&mut arr, 4, 6);
 
-    unsafe {
-        for val in &arr {
-            println!("{:?}", val);
-        }
-    }
-
-    fn ks(n: usize, c: usize) -> usize {
-        let result: usize;
-        unsafe {
-            if arr[n][c] != None {
-                return arr[n][c].unwrap();
-            }
-            if (n==0) || (c==0) {
-                result = 0
-            } else if w[n] > c {
-                result = ks(n-1, c);
-            } else {
-                let tmp1 = ks(n-1, c);
-                let tmp2 = ks(n-1, c);
-                v[n] = ks(n-1, c);
-                result = max(tmp1, tmp2);
-            }
-        arr[n][c] = Some(result);
-        }
-
-        return result;
-    }
-
+    for row in arr.value { println!("{:?}", row); }
 }
 
-// fn ks(arr: &mut Vec<Vec<Option<usize>>>, n: usize, c: usize) -> usize {
+struct Arrs {
+    value: Vec<Vec<isize>>,
+    w: Vec<usize>,
+    v: Vec<usize>,
+}
+
+fn ks(arrs: &mut Arrs, i: usize, j: usize) {
+    if (i == 0) || (j <= 0) {
+        arrs.value[i][j] = 0;
+        return
+    }
+    if arrs.value[i-1][j] == -1 {
+        ks(arrs, i-1, j);
+    }
+    if arrs.w[i]>j {
+        arrs.value[i][j] = arrs.value[i-1][j];
+    } else if (arrs.value[i-1][j - arrs.w[i]] == -1) {
+        ks(arrs, i-1, j-arrs.w[i]);
+        arrs.value[i][j] = max(arrs.value[i-1][j], arrs.value[i-1][j-arrs.w[i] + arrs.v[i]]);
+    }
+}
 
 
+// Define value[n, W]
+//
+// Initialize all value[i, j] = -1
+//
+// Define m:=(i,j)         // Define function m so that it represents the maximum value we can get under the condition: use first i items, total weight limit is j
+// {
+// if i == 0 or j <= 0 then:
+// value[i, j] = 0
+// return
+//
+// if (value[i-1, j] == -1) then:     // m[i-1, j] has not been calculated, we have to call function m
+// m(i-1, j)
+//
+// if w[i] > j then:                      // item cannot fit in the bag
+// value[i, j] = value[i-1, j]
+// else:
+// if (value[i-1, j-w[i]] == -1) then:     // m[i-1,j-w[i]] has not been calculated, we have to call function m
+// m(i-1, j-w[i])
+// value[i, j] = max(value[i-1,j], value[i-1, j-w[i]] + v[i])
+// }
+//
+// Run m(n, W)
