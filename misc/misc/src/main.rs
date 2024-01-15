@@ -2,12 +2,15 @@ use std::cell::RefCell;
 use std::cmp::max;
 
 fn main() {
-    let value: Vec<Vec<isize>> = vec![vec![-1; 14]; 14];
-    let w = vec![5, 2, 3, 9, 3];
-    let v = vec![5, 6, 3, 4, 2];
+    let capacity = 4;
+    let w = vec![1, 2 ];
+    let v = vec![5,4,];
+
+    let len = w.len();
+    let value: Vec<Vec<isize>> = vec![vec![-1; capacity+1]; len+1];
     let mut arr: Arrs = Arrs {value, w, v};
 
-    ks(&mut arr, 4, 6);
+    ks(&mut arr, len -1, capacity);
 
     for row in arr.value { println!("{:?}", row); }
 }
@@ -28,9 +31,10 @@ fn ks(arrs: &mut Arrs, i: usize, j: usize) {
     }
     if arrs.w[i]>j {
         arrs.value[i][j] = arrs.value[i-1][j];
+
     } else if (arrs.value[i-1][j - arrs.w[i]] == -1) {
         ks(arrs, i-1, j-arrs.w[i]);
-        arrs.value[i][j] = max(arrs.value[i-1][j], arrs.value[i-1][j-arrs.w[i] + arrs.v[i]]);
+        arrs.value[i][j] = max(arrs.value[i-1][j], arrs.value[i-1][j-arrs.w[i]] + arrs.v[i] as isize);
     }
 }
 
