@@ -1,4 +1,4 @@
-#Dima Learns Rust
+# Dima Learns Rust
 ---
 RustAlgos - lowkey useful
 Graph - Rust Algos but for Graphs only - contains remakes of existing algorithms
