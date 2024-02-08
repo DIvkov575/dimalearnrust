@@ -1,63 +1,48 @@
-use std::cell::RefCell;
-use std::cmp::max;
+
+enum Output {
+    Table(Vec<Vec<usize>>),
+    Items(Vec<usize>),
+}
+
 
 fn main() {
+    let w = vec![1usize, 2, 3];
+    let v = vec![1usize, 2, 5];
     let capacity = 4;
-    let w = vec![1, 2 ];
-    let v = vec![5,4,];
 
-    let len = w.len();
-    let value: Vec<Vec<isize>> = vec![vec![-1; capacity+1]; len+1];
-    let mut arr: Arrs = Arrs {value, w, v};
-
-    ks(&mut arr, len -1, capacity);
-
-    for row in arr.value { println!("{:?}", row); }
-}
-
-struct Arrs {
-    value: Vec<Vec<isize>>,
-    w: Vec<usize>,
-    v: Vec<usize>,
-}
-
-fn ks(arrs: &mut Arrs, i: usize, j: usize) {
-    if (i == 0) || (j <= 0) {
-        arrs.value[i][j] = 0;
-        return
-    }
-    if arrs.value[i-1][j] == -1 {
-        ks(arrs, i-1, j);
-    }
-    if arrs.w[i]>j {
-        arrs.value[i][j] = arrs.value[i-1][j];
-
-    } else if (arrs.value[i-1][j - arrs.w[i]] == -1) {
-        ks(arrs, i-1, j-arrs.w[i]);
-        arrs.value[i][j] = max(arrs.value[i-1][j], arrs.value[i-1][j-arrs.w[i]] + arrs.v[i] as isize);
+    match knapsack(capacity, w, v) {
+        Output::Items(a) => println!("{:?}", a),
+        Output::Table(a) => for row in a {println!("{:?}", row)},
     }
 }
 
 
-// Define value[n, W]
-//
-// Initialize all value[i, j] = -1
-//
-// Define m:=(i,j)         // Define function m so that it represents the maximum value we can get under the condition: use first i items, total weight limit is j
-// {
-// if i == 0 or j <= 0 then:
-// value[i, j] = 0
-// return
-//
-// if (value[i-1, j] == -1) then:     // m[i-1, j] has not been calculated, we have to call function m
-// m(i-1, j)
-//
-// if w[i] > j then:                      // item cannot fit in the bag
-// value[i, j] = value[i-1, j]
-// else:
-// if (value[i-1, j-w[i]] == -1) then:     // m[i-1,j-w[i]] has not been calculated, we have to call function m
-// m(i-1, j-w[i])
-// value[i, j] = max(value[i-1,j], value[i-1, j-w[i]] + v[i])
-// }
-//
-// Run m(n, W)
+pub fn knapsack(capacity: usize, w: Vec<usize>, v:Vec<usize>) -> Output {
+    let n = w.len();
+    let mut output: Vec<Vec<usize>> = vec![vec![0; n+1]; capacity+1usize];
+
+    for i in 1..=n {
+        let w = w[i-1];
+        let v = v[i-1];
+
+        for sz in 1..=n {
+            output[i][sz] = output[i-1][sz];
+
+            if (sz >= w) && (output[i-1][sz-w] + v > output[i][sz]) {
+                output[i][sz] = output[i-1][sz-w] + v;
+            }
+        }
+    }
+
+    // let mut sz = capacity;
+    // let mut items_selected: Vec<usize> = Vec::new();
+    //
+    // for i in (1..=n).rev() {
+    //     if output[i][sz] != output[i-1][sz] {
+    //         items_selected.push(i-1);
+    //         sz -= w[i-1];
+    //     }
+    // }
+
+    Output::Table(output)
+}
