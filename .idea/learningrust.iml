@@ -6,9 +6,11 @@
       <sourceFolder url="file://$MODULE_DIR$/graph/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/misc/misc/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/misc/macros/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/misc/euler_math/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/graph/target" />
       <excludeFolder url="file://$MODULE_DIR$/misc/misc/target" />
       <excludeFolder url="file://$MODULE_DIR$/misc/macros/target" />
+      <excludeFolder url="file://$MODULE_DIR$/misc/euler_math/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
