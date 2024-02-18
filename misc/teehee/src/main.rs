@@ -14,7 +14,7 @@ fn main() -> Result<()> {
         return Err(MyError::PathWasFile.into());
     }
 
-    let mut file = std::fs::OpenOptions::new().write(true).create(true).open(path.join("tmp"))?;
+    let mut file = std::fs::OpenOptions::new().write(true).append(true).create(true).open(path.join("tmp"))?;
     file.write_all("teststring".as_bytes())?;
 
     Command::new("git").args(["add", "-A"]).output()?;
