@@ -21,6 +21,9 @@ fn main() -> Result<()> {
     Command::new("git").args(["commit", "-am", r#""test""#] ).output()?;
     Command::new("git").args(["push"]).output()?;
 
+    Command::new("git").args(["reset", "HEAD@{1}"]).output()?;
+    Command::new("git").args(["push", "--force"]).output()?;
+
     Ok(())
 
 }
