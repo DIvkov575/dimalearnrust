@@ -1,3 +1,4 @@
+use std::cmp::max_by_key;
 use std::error::Error;
 use std::fs;
 use std::fs::read_dir;
@@ -14,13 +15,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     if read_dir(".").unwrap()
         .map(|x| x.unwrap().file_name())
         .any(|x| x == "Cargo.toml") {
+        println!("Cargo project detected");
+
 
         let release_dir = Path::new("target").join("release");
         let usr_bins = Path::new("/usr").join("local").join("bin");
 
         // ensure build target exists
-        if !release_dir.exists() { Command::new("cargo").args(["build", "--release"]).output()?; }
-        if !release_dir.exists() { return Err(ReleaseDirDNE.into()); }
+        let status = Command::new("cargo").args(["build", "--release", "-C target-cpu=native"]).status()?;
+        println!("Cargo project build w/ status {}", status);
+        // if !release_dir.exists() { Command::new("cargo").args(["build", "--release"]).output()?; }
+        // if !release_dir.exists() { return Err(ReleaseDirDNE.into()); }
+        // println!("Build release target dir exists");
 
         // get binary targets
         let bins = get_binaries(&release_dir)?;
@@ -29,6 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         if args.len() > 1 { out_name = &args[1]; }
         else { out_name = &bins[0] }
         if bins.len() != 1 { return Err(WrongReleaseFiles.into())}
+        println!("Single target exists");
 
 
         // copy file
