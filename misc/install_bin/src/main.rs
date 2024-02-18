@@ -4,8 +4,8 @@ use std::fs;
 use std::fs::read_dir;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use thiserror::Error;
-use crate::MyError::{ReleaseDirDNE, WrongReleaseFiles};
+// use thiserror::Error;
+// use crate::MyError::{ReleaseDirDNE, WrongReleaseFiles};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = std::env::args().collect();
@@ -22,7 +22,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         let usr_bins = Path::new("/usr").join("local").join("bin");
 
         // ensure build target exists
-        let status = Command::new("cargo").args(["build", "--release", "-C target-cpu=native"]).status()?;
+        let status = Command::new("cargo").args(["build", "--release"]).status()?;
+        // let status = Command::new("cargo").args(["build", "--release", "-Ctarget-cpu=native"]).status()?;
         println!("Cargo project build w/ status {}", status);
         // if !release_dir.exists() { Command::new("cargo").args(["build", "--release"]).output()?; }
         // if !release_dir.exists() { return Err(ReleaseDirDNE.into()); }
@@ -34,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         // ensure only 1 was created
         if args.len() > 1 { out_name = &args[1]; }
         else { out_name = &bins[0] }
-        if bins.len() != 1 { return Err(WrongReleaseFiles.into())}
+        if bins.len() != 1 { return Err("Incorrect number of binaries within release target".into())}
         println!("Single target exists");
 
 
@@ -66,11 +67,11 @@ pub fn get_binaries(release_dir: &Path) -> Result<Vec<String>, Box<dyn Error>> {
 
 
 
-#[derive(Error, Debug)]
-#[error("install_bin error")]
-enum MyError {
-    #[error("rust release target dir does not exist")]
-    ReleaseDirDNE,
-    #[error("Incorrect number of binaries within release target dir")]
-    WrongReleaseFiles,
-}
+// #[derive(Error, Debug)]
+// #[error("install_bin error")]
+// enum MyError {
+//     #[error("rust release target dir does not exist")]
+//     ReleaseDirDNE,
+//     #[error("Incorrect number of binaries within release target dir")]
+//     WrongReleaseFiles,
+// }
