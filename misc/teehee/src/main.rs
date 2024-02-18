@@ -6,7 +6,8 @@ use std::process::Command;
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
-    let path = Path::new(&args[1]);
+    // let path = Path::new(&args[1]);
+    let path = Path::new("tmp");
 
     if !path.exists() {
         std::fs::create_dir(path)?;
