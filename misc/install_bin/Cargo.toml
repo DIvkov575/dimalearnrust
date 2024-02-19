@@ -12,3 +12,6 @@ edition = "2021"
 target-cpu="native"
 codegen-units = 1
 lto = "fat"
+rustflags = "-C target-cpu=native"
+
+
