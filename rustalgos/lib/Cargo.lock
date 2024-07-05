@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "lib"
+name = "rustalgos"
 version = "0.1.0"
