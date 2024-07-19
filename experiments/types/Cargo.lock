@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "euler_math"
+name = "type-experiments"
 version = "0.1.0"
