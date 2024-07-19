@@ -10,4 +10,6 @@ int main() {
 
     printf("%d", *b);
 
+
+
 }
