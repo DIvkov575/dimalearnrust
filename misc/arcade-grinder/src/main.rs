@@ -1,66 +1,54 @@
+mod init;
+mod deploy;
+
+use serde::{Serialize, Deserialize};
+use serde_json;
+use std::collections::VecDeque;
 use std::error::Error;
-use std::fs::{copy, read_dir};
-use std::path::Path;
-use std::process::exit;
-use regex::Regex;
-use run_script::ScriptOptions;
+use std::path::{Path, PathBuf};
+use clap::Parser;
+use once_cell::sync::Lazy;
+use crate::deploy::deploy;
+use crate::init::init;
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let input_path = Path::new("..").join("..").join("..").join("lpm1-arcade");
-    let output_path = Path::new("..").join("..").join("..").join("website");
-
-    get_commits(&input_path);
-    exit(1);
-
-    for file in read_dir(&output_path)?.map(|x| x.unwrap()) {
-        if &file.file_name() != ".git" {
-            // std::fs::remove_dir_all(file.path())?;
-            println!("{:?} removed", &file.file_name())
-        } else {
-            println!("{:?}", file.file_name());
-        }
-    }
-
-    for ifile_path in read_dir(&input_path)?.map(|x| x.unwrap()) {
-        if &ifile_path.file_name() != ".git" {
-            let ofile_path = output_path.join(&ifile_path.file_name());
-            copy(&ifile_path.path(), &ofile_path)?;
-            println!("{:?} copied to {:?}", &ifile_path.path(), ofile_path);
-        } else {
-            println!("{:?} not copied", ifile_path.file_name());
-        }
-    }
-    Ok(())
+#[derive(Serialize, Deserialize, Debug)]
+struct Config {
+    queue: VecDeque<(String, String)>,
+    input_path: String,
+    output_path: String,
 }
 
-fn get_commits(path: &Path) -> Vec<(String)> {
-    let args = vec![path.to_str().unwrap().to_owned()];
-    let (code, output, error) = run_script::run(
-        r#"
-        cd $1
-        git checkout main
-        git --no-pager log
-         "#,
-        &args,
-        &ScriptOptions::new(),
-    )
-        .unwrap();
+#[derive(Parser, Debug)]
+enum Command {
+    #[command(about="Init grinder")]
+    Init,
+    #[command(about="Deploy grinder")]
+    Deploy,
+}
 
-    println!("Exit Code: {}", code);
-    // println!("Output: {}", output);
-    println!("Error: {}", error);
-
-    let regex = Regex::new(r"commit\s([a-f0-9]{40})\n(?:.|\n)*?\n\n\s*(.+)").unwrap();
-    for capture in regex.captures_iter(&output) {
-        println!("{}", std::iter::repeat("=").take(15).collect::<String>());
-        if let Some(commit_id) = capture.get(1) {
-            println!("{}", &commit_id.as_str());
-        }
-        if let Some(commit_message) = capture.get(2) {
-            println!("{}", &commit_message.as_str());
+impl Command {
+    pub fn run(self) -> Result<(), Box<dyn Error>> {
+        match self {
+            Command::Init => Ok(init().unwrap()),
+            Command::Deploy=> Ok(deploy().unwrap()),
+            // _ => Err(anyhow!("invalid command").into()),
+            _ => Err("invalid command".into()),
         }
     }
+}
+
+#[derive(Debug, Parser)]
+#[command(version, about, long_about = None,)]
+pub struct Args {
+    #[clap(subcommand)]
+    pub command: Command,
+}
+impl Args { pub fn run(self) { self.command.run().unwrap(); } }
 
 
-    vec![]
+
+static CONFIG_PATH: Lazy<PathBuf> = Lazy::new(|| Path::new("ag_config.json").to_owned());
+
+fn main() {
+    Args::parse().run();
 }
