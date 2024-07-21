@@ -4,7 +4,9 @@ use anyhow::{Context, Result};
 
 fn main() -> Result<()> {
     // fn main() -> result<(), box<dyn std::error::error>> {
-    a()?;
+    //     a()?;
+    //     b();
+    c();
 
 
     Ok(())
@@ -12,8 +14,18 @@ fn main() -> Result<()> {
 
 
 
+fn b() {
+    println!("{:?}", std::panic::Location::caller());
+}
 
-
+#[track_caller]
+fn c() {
+    d();
+}
+#[track_caller]
+fn d() {
+    a().unwrap();
+}
 
 
 
@@ -35,7 +47,6 @@ struct MyError {
 }
 
 impl Display for MyError {
-    #[track_caller]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
         write!(f, "{} @ {} {}", self.message,std::panic::Location::caller().file(), std::panic::Location::caller().line())?;
         Ok(())
