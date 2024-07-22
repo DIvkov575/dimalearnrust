@@ -3,9 +3,11 @@ use std::error::Error;
 use std::{fs, io, path};
 use std::fs::read_dir;
 use std::io::read_to_string;
+use std::mem::MaybeUninit;
 use std::path::Path;
 use std::process::{Command, Output};
 use anyhow::Context;
+use regex::Regex;
 use crate::{Config, CONFIG_PATH};
 
 pub fn deploy() -> Result<(), Box<dyn Error>> {
@@ -26,8 +28,8 @@ pub fn deploy() -> Result<(), Box<dyn Error>> {
     copy_files(&input_path, &output_path)?;
     gacp(&output_path, &config.queue[0].1)?;
 
-    let commmit_url = gh_commit_url(&config, &config.queue[0].0);
-    println!("\n\n{}", commmit_url);
+    let commit_url = gh_commit_url(&config, &output_path)?;
+    println!("\n\n{}", commit_url);
 
     Ok(())
 
@@ -45,7 +47,6 @@ fn checkout(path: &Path, id: &str) -> Result<(), io::Error> {
 fn copy_files(input_path: &Path, output_path: &Path) -> Result<()>{
     for file in read_dir(&output_path)?.map(|x| x.unwrap()) {
         if &file.file_name() != ".git" {
-            // fs::remove_dir_all(file.path())?;
             Command::new("rm")
                 .arg("-r")
                 .arg(&file.path())
@@ -90,12 +91,27 @@ fn gacp(path: &Path, message: &str) -> Result<()> {
     println!("{:?}", output);
 
     // push
-    // let output = Command::new("git").arg("push").output()
-    //     .with_context(|| format!("{:?} @ {} {}", output, file!(), line!()))?;
+    let args = vec!["-C", path.to_str().unwrap(), "push"];
+    let output = Command::new("git").args(args).output()
+        .with_context(|| format!("{:?} @ {} {}", output, file!(), line!()))?;
 
     Ok(())
 }
 
-fn gh_commit_url(config: &Config, commit_id: &str) -> String {
-    format!("https://github.com/{}/{}/commit/{}", &config.gh_username, &config.gh_repo_name, commit_id)
+fn gh_commit_url(config: &Config, output_path: &Path) -> Result<String> {
+
+    let mut commit_id = "";
+    let args = vec!["-C", output_path.to_str().unwrap(), "log"];
+    let output = Command::new("git").args(&args).output()
+        .with_context(|| format!("error get git log from output dir {} {}", file!(), line!()))?;
+    println!("output: {:?}", &output);
+    let parsed_output = String::from_utf8(output.stdout)?;
+
+
+    if let Some(capture)  = Regex::new(r"commit ([a-f0-9]{40})")
+        .unwrap()
+        .captures(&parsed_output) {
+        commit_id = capture.get(1).unwrap().as_str();
+    }
+    Ok(format!("https://github.com/{}/{}/commit/{}", &config.gh_username, &config.gh_repo_name, &commit_id))
 }

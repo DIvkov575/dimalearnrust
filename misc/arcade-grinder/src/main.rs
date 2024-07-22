@@ -17,13 +17,12 @@ struct Config {
     output_path: String,
     gh_username: String,
     gh_repo_name: String,
-    slack_api_token: String,
     queue: VecDeque<(String, String)>,
 }
 
 impl Config {
     fn empty() -> Self {
-        Self {queue: VecDeque::new(), input_path: "".to_string(), output_path: "".to_string(), gh_repo_name: "".to_string(), gh_username: "".to_string(), slack_api_token: "".to_string()}
+        Self {queue: VecDeque::new(), input_path: "".to_string(), output_path: "".to_string(), gh_repo_name: "".to_string(), gh_username: "".to_string()}
     }
 
 }
@@ -41,7 +40,6 @@ impl Command {
         match self {
             Command::Init => Ok(init().unwrap()),
             Command::Deploy=> Ok(deploy().unwrap()),
-            // _ => Err(anyhow!("invalid command").into()),
             _ => Err("invalid command".into()),
         }
     }
