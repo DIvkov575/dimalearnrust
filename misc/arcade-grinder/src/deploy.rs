@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use std::error::Error;
 use std::{fs, io, path};
 use std::fs::read_dir;
@@ -10,7 +10,7 @@ use anyhow::Context;
 use regex::Regex;
 use crate::{Config, CONFIG_PATH};
 
-pub fn deploy() -> Result<(), Box<dyn Error>> {
+pub fn deploy(commit_id: String, message_option: Option<String>) -> Result<(), Box<dyn Error>> {
     let file = fs::File::options()
         .create(true)
         .write(true)
@@ -20,19 +20,43 @@ pub fn deploy() -> Result<(), Box<dyn Error>> {
     let config_str = read_to_string(&file).with_context(|| format!("Error reading config file {} {}", file!(), line!()))?;
     let config: Config = serde_yaml::from_str(&config_str).with_context(|| format!("Error deserializing string {} {}", file!(), line!()))?;
 
+    let input_path = Path::new(&config.input_path);
+    let output_path = Path::new(&config.output_path);
 
-    let input_path = path::Path::new(&config.input_path);
-    let output_path = path::Path::new(&config.output_path);
 
-    checkout(&input_path, &config.queue[0].0)?;
+    checkout(&input_path, &commit_id)?;
     copy_files(&input_path, &output_path)?;
-    gacp(&output_path, &config.queue[0].1)?;
+
+    if let Some(commit_message) = message_option {
+        gacp(&output_path, &commit_message)?;
+    } else {
+        let commit_message = get_message_from_id(&input_path, &commit_id)?;
+        gacp(&output_path, &commit_message)?;
+    }
 
     let commit_url = gh_commit_url(&config, &output_path)?;
     println!("\n\n{}", commit_url);
 
     Ok(())
 
+}
+
+
+fn get_message_from_id(input_path: &Path, id: &str) -> Result<String> {
+    let args = vec!["-C", input_path.to_str().unwrap(), "log"];
+    let output = Command::new("git").args(&args).output()
+        .with_context(|| format!("error get git log from input dir {} {}", file!(), line!()))?;
+    println!("output: {:?}", &output);
+    let parsed_output = String::from_utf8(output.stdout)?;
+
+    let regex = Regex::new(r"commit\s([a-f0-9]{40})\n(?:.|\n)*?\n\n\s*(.+)").unwrap();
+
+    for capture in regex.captures_iter(&parsed_output) {
+        if capture.get(1).unwrap().as_str() == id {
+            return Ok(capture.get(2).unwrap().as_str().to_owned());
+        }
+    }
+    bail!("message w/ specified commit not found");
 }
 
 

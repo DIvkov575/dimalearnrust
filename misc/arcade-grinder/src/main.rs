@@ -17,12 +17,11 @@ struct Config {
     output_path: String,
     gh_username: String,
     gh_repo_name: String,
-    queue: VecDeque<(String, String)>,
 }
 
 impl Config {
     fn empty() -> Self {
-        Self {queue: VecDeque::new(), input_path: "".to_string(), output_path: "".to_string(), gh_repo_name: "".to_string(), gh_username: "".to_string()}
+        Self { input_path: "".to_string(), output_path: "".to_string(), gh_repo_name: "".to_string(), gh_username: "".to_string()}
     }
 
 }
@@ -32,14 +31,19 @@ enum Command {
     #[command(about="Init grinder")]
     Init,
     #[command(about="Deploy grinder")]
-    Deploy,
+    Deploy {
+        #[arg(short, long)]
+        commit_id: String,
+        #[arg(short, long)]
+        message: Option<String>,
+    },
 }
 
 impl Command {
     pub fn run(self) -> Result<(), Box<dyn Error>> {
         match self {
             Command::Init => Ok(init().unwrap()),
-            Command::Deploy=> Ok(deploy().unwrap()),
+            Command::Deploy {commit_id, message}=> Ok(deploy(commit_id, message).unwrap()),
             _ => Err("invalid command".into()),
         }
     }
@@ -52,7 +56,6 @@ pub struct Args {
     pub command: Command,
 }
 impl Args { pub fn run(self) { self.command.run().unwrap(); } }
-
 
 
 static CONFIG_PATH: Lazy<PathBuf> = Lazy::new(|| Path::new("ag_config.yaml").to_owned());
