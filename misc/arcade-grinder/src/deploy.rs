@@ -123,8 +123,7 @@ fn gacp(path: &Path, message: &str) -> Result<()> {
 }
 
 fn gh_commit_url(config: &Config, output_path: &Path) -> Result<String> {
-
-    let mut commit_id = "";
+    // get all logs
     let args = vec!["-C", output_path.to_str().unwrap(), "log"];
     let output = Command::new("git").args(&args).output()
         .with_context(|| format!("error get git log from output dir {} {}", file!(), line!()))?;
@@ -132,10 +131,15 @@ fn gh_commit_url(config: &Config, output_path: &Path) -> Result<String> {
     let parsed_output = String::from_utf8(output.stdout)?;
 
 
+    // find log w/ specified id
+    let mut commit_id = "";
     if let Some(capture)  = Regex::new(r"commit ([a-f0-9]{40})")
         .unwrap()
         .captures(&parsed_output) {
         commit_id = capture.get(1).unwrap().as_str();
     }
-    Ok(format!("https://github.com/{}/{}/commit/{}", &config.gh_username, &config.gh_repo_name, &commit_id))
+
+    // format data
+    let repo_name = output_path.file_name().unwrap().to_str().unwrap();
+    Ok(format!("https://github.com/{}/{}/commit/{}", &config.gh_username, repo_name, &commit_id))
 }

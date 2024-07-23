@@ -16,12 +16,11 @@ struct Config {
     input_path: String,
     output_path: String,
     gh_username: String,
-    gh_repo_name: String,
 }
 
 impl Config {
     fn empty() -> Self {
-        Self { input_path: "".to_string(), output_path: "".to_string(), gh_repo_name: "".to_string(), gh_username: "".to_string()}
+        Self { input_path: "".to_string(), output_path: "".to_string(), gh_username: "".to_string()}
     }
 
 }
@@ -29,7 +28,15 @@ impl Config {
 #[derive(Parser, Debug)]
 enum Command {
     #[command(about="Init grinder")]
-    Init,
+    Init {
+        #[arg(short, long)]
+        input_path: String,
+        #[arg(short, long)]
+        output_path: String,
+        #[arg(short, long)]
+        gh_username: Option<String>
+
+    },
     #[command(about="Deploy grinder")]
     Deploy {
         #[arg(short, long)]
@@ -42,7 +49,7 @@ enum Command {
 impl Command {
     pub fn run(self) -> Result<(), Box<dyn Error>> {
         match self {
-            Command::Init => Ok(init().unwrap()),
+            Command::Init {input_path, output_path, gh_username}=> Ok(init(input_path, output_path, gh_username).unwrap()),
             Command::Deploy {commit_id, message}=> Ok(deploy(commit_id, message).unwrap()),
             _ => Err("invalid command".into()),
         }
@@ -58,7 +65,7 @@ pub struct Args {
 impl Args { pub fn run(self) { self.command.run().unwrap(); } }
 
 
-static CONFIG_PATH: Lazy<PathBuf> = Lazy::new(|| Path::new("ag_config.yaml").to_owned());
+static CONFIG_PATH: Lazy<PathBuf> = Lazy::new(|| home::home_dir().unwrap().join(".ag_config.yaml"));
 
 fn main() {
     Args::parse().run();
