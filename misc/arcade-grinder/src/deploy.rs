@@ -28,10 +28,14 @@ pub fn deploy(commit_id: String, message_option: Option<String>) -> Result<(), B
     copy_files(&input_path, &output_path)?;
 
     if let Some(commit_message) = message_option {
-        gacp(&output_path, &commit_message)?;
+        gadd(&output_path, &commit_message)?;
+        gcommit(&output_path, &commit_message)?;
+        gpush(&output_path, &commit_message)?;
     } else {
         let commit_message = get_message_from_id(&input_path, &commit_id)?;
-        gacp(&output_path, &commit_message)?;
+        gadd(&output_path, &commit_message)?;
+        gcommit(&output_path, &commit_message)?;
+        gpush(&output_path, &commit_message)?;
     }
 
     let commit_url = gh_commit_url(&config, &output_path)?;
@@ -100,25 +104,27 @@ fn copy_files(input_path: &Path, output_path: &Path) -> Result<()>{
     Ok(())
 }
 
-fn gacp(path: &Path, message: &str) -> Result<()> {
-    // git add commit & push
 
-    //add
+fn gadd(path: &Path, message: &str) -> Result<()> {
     let args = vec!["-C", path.to_str().unwrap(), "add", "-A"];
     let output = Command::new("git").args(args).output()?;
     println!("{:?}", output);
+    Ok(())
+}
 
+fn gcommit(path: &Path, message: &str) -> Result<()> {
     //commit
     let formatted_message = format!(r#"'{}'"#, message);
     let args = vec!["-C", path.to_str().unwrap(), "commit", "-am", &formatted_message];
     let output = Command::new("git").args(args).output()?;
     println!("{:?}", output);
-
-    // push
-    let args = vec!["-C", path.to_str().unwrap(), "push"];
-    let output = Command::new("git").args(args).output()
-        .with_context(|| format!("{:?} @ {} {}", output, file!(), line!()))?;
-
+    Ok(())
+}
+fn gpush(path: &Path, message: &str) -> Result<()> {
+    //push
+    let args = vec!["-C", path.to_str().unwrap(), "push", "--force"];
+    let output = Command::new("git").args(args).output()?;
+    println!("{:?}", output);
     Ok(())
 }
 

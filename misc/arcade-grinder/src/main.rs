@@ -51,7 +51,6 @@ impl Command {
         match self {
             Command::Init {input_path, output_path, gh_username}=> Ok(init(input_path, output_path, gh_username).unwrap()),
             Command::Deploy {commit_id, message}=> Ok(deploy(commit_id, message).unwrap()),
-            _ => Err("invalid command".into()),
         }
     }
 }

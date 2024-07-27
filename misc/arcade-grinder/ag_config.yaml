@@ -1,7 +1,0 @@
-input_path: ../../../sqlml
-output_path: ../../../sql-lib-in-pgsql
-gh_username: divkov575
-gh_repo_name: sql-lib-in-pgsql
-  - - 60c01307ec7bb9326c521ac39071556da08431d7
-queue:
-  - added open graph protocol support after much trial an error

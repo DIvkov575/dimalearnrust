@@ -7,7 +7,7 @@ use crate::{Config, CONFIG_PATH};
 
 
 pub fn init(input_path: String, output_path: String, gh_username: Option<String>) -> Result<(), Box<dyn Error>> {
-    // if !path::PathBuf::from(&CONFIG_PATH).exists() {
+    // create empty version of struct if file doesn't exist
     if !CONFIG_PATH.exists() {
         let config_empty = Config::empty();
         let mut file = fs::File::options()
