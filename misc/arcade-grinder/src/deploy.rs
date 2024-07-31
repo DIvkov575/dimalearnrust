@@ -3,12 +3,11 @@ use std::error::Error;
 use std::{fs, io, path};
 use std::fs::read_dir;
 use std::io::read_to_string;
-use std::mem::MaybeUninit;
 use std::path::Path;
-use std::process::{Command, Output};
 use anyhow::Context;
 use regex::Regex;
 use crate::{Config, CONFIG_PATH};
+use std::process::Command;
 
 pub fn deploy(commit_id: String, message_option: Option<String>) -> Result<(), Box<dyn Error>> {
     let file = fs::File::options()
@@ -28,14 +27,14 @@ pub fn deploy(commit_id: String, message_option: Option<String>) -> Result<(), B
     copy_files(&input_path, &output_path)?;
 
     if let Some(commit_message) = message_option {
-        gadd(&output_path, &commit_message)?;
+        gadd(&output_path)?;
         gcommit(&output_path, &commit_message)?;
-        gpush(&output_path, &commit_message)?;
+        gpush(&output_path)?;
     } else {
         let commit_message = get_message_from_id(&input_path, &commit_id)?;
-        gadd(&output_path, &commit_message)?;
+        gadd(&output_path)?;
         gcommit(&output_path, &commit_message)?;
-        gpush(&output_path, &commit_message)?;
+        gpush(&output_path)?;
     }
 
     let commit_url = gh_commit_url(&config, &output_path)?;
@@ -73,20 +72,22 @@ fn checkout(path: &Path, id: &str) -> Result<(), io::Error> {
 
 
 fn copy_files(input_path: &Path, output_path: &Path) -> Result<()>{
+    let dont_delete = vec![".gitignore"];
+    let dont_copy = vec![".gitignore"];
     for file in read_dir(&output_path)?.map(|x| x.unwrap()) {
-        if &file.file_name() != ".git" {
+        if &file.file_name() != ".git" && !dont_delete.contains(&file.file_name().as_os_str().to_str().unwrap()) {
             Command::new("rm")
                 .arg("-r")
                 .arg(&file.path())
                 .output()?;
             println!("{:?} removed", &file.file_name())
         } else {
-            println!("{:?}", file.file_name());
+            println!("{:?} not removed", file.file_name());
         }
     }
 
     for ifile_path in read_dir(&input_path)?.map(|x| x.unwrap()) {
-        if &ifile_path.file_name() != ".git" {
+        if &ifile_path.file_name() != ".git" && !dont_delete.contains(&ifile_path.file_name().as_os_str().to_str().unwrap()) {
             let ofile_path = output_path.join(&ifile_path.file_name());
 
             Command::new("cp")
@@ -105,7 +106,7 @@ fn copy_files(input_path: &Path, output_path: &Path) -> Result<()>{
 }
 
 
-fn gadd(path: &Path, message: &str) -> Result<()> {
+fn gadd(path: &Path) -> Result<()> {
     let args = vec!["-C", path.to_str().unwrap(), "add", "-A"];
     let output = Command::new("git").args(args).output()?;
     println!("{:?}", output);
@@ -120,9 +121,10 @@ fn gcommit(path: &Path, message: &str) -> Result<()> {
     println!("{:?}", output);
     Ok(())
 }
-fn gpush(path: &Path, message: &str) -> Result<()> {
+fn gpush(path: &Path) -> Result<()> {
     //push
-    let args = vec!["-C", path.to_str().unwrap(), "push", "--force"];
+    //push
+    let args = vec!["-C", path.to_str().unwrap(), "push"];
     let output = Command::new("git").args(args).output()?;
     println!("{:?}", output);
     Ok(())
